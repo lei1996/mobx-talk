@@ -1,3 +1,4 @@
+// 获取 MoviesStore 实例对象
 import { MoviesStore } from "./Movies-mobx.js";
 import { act, renderHook } from "@testing-library/react-hooks";
 
@@ -52,6 +53,7 @@ fetch.mockResponse(req => {
 
 describe("useMovies hook", () => {
 	it("should render hook and expose an API", () => {
+		// 获取 store 实例对象
 		const store = MoviesStore();
 		expect(store.movies).toEqual([]);
 		expect(store.queue).toEqual([]);
@@ -77,7 +79,7 @@ describe("useMovies hook", () => {
 		]);
 	});
 
-	it("should allow us to add movies into the queue", async () => {
+	it("将movies 推入 queue 数组", async () => {
 		const store = MoviesStore();
 		await store.fetchAll();
 		store.addToQueue(store.movies[4]);

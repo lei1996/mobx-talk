@@ -1,4 +1,5 @@
 import { useMovies } from "./Movies.js";
+// 用于测试 hooks 的 lib
 import { act, renderHook } from "@testing-library/react-hooks";
 
 const mockMovies = {
@@ -52,9 +53,12 @@ fetch.mockResponse(req => {
 
 describe("useMovies hook", () => {
 	it("should render hook and expose an API", () => {
+		// 初始化hooks
 		const { result } = renderHook(() => useMovies());
+		// 对象属性 空数组(是否初始化数组成功)
 		expect(result.current.movies).toEqual([]);
 		expect(result.current.queue).toEqual([]);
+		// 对象是否为function 函数
 		expect(typeof result.current.like).toBe("function");
 		expect(typeof result.current.dislike).toBe("function");
 		expect(typeof result.current.addToQueue).toBe("function");
@@ -63,6 +67,7 @@ describe("useMovies hook", () => {
 
 	it("should fetch a list of movies", async () => {
 		const { result } = renderHook(() => useMovies());
+		// 异步调用 api 获取数据
 		await act(async () => await result.current.fetchAll());
 		expect(result.current.movies).toEqual(mockMovies.Search);
 	});
@@ -71,6 +76,7 @@ describe("useMovies hook", () => {
 		const { result } = renderHook(() => useMovies());
 		await act(async () => await result.current.fetchAll());
 		await act(async () => await result.current.fetchAll());
+		// 调用两次 api  测试分页数据是否正确
 		expect(result.current.movies).toEqual([
 			...mockMoviesPage2.Search,
 			...mockMovies.Search
@@ -80,6 +86,7 @@ describe("useMovies hook", () => {
 	it("should allow us to add movies into the queue", async () => {
 		const { result } = renderHook(() => useMovies());
 		await act(async () => await result.current.fetchAll());
+		// 将单个 movie 添加进 queue 
 		act(() => result.current.addToQueue(result.current.movies[4]));
 		expect(result.current.queue).toEqual([result.current.movies[4]]);
 	});
@@ -87,7 +94,9 @@ describe("useMovies hook", () => {
 	it("should allow us to like a movie", async () => {
 		const { result } = renderHook(() => useMovies());
 		await act(async () => await result.current.fetchAll());
+		// 异步将 movies 下标4 的数据score 加 1
 		act(() => result.current.like(result.current.movies[4]));
+		// 遍历所有 movies 的 score 判断是否为 [0, 0, 0, 0, 1]. 初始值为 [0, 0, 0, 0, 0]
 		expect(result.current.movies.map(m => m.score)).toEqual([0, 0, 0, 0, 1]);
 	});
 
@@ -95,6 +104,7 @@ describe("useMovies hook", () => {
 		const { result } = renderHook(() => useMovies());
 		await act(async () => await result.current.fetchAll());
 		act(() => result.current.dislike(result.current.movies[4]));
+		// 遍历所有 movies 的 score 判断是否为 [0, 0, 0, 0, -1]. 初始值为 [0, 0, 0, 0, 0]
 		expect(result.current.movies.map(m => m.score)).toEqual([0, 0, 0, 0, -1]);
 	});
 });

@@ -13,9 +13,11 @@ export const MoviesStore = () => {
 				`http://www.omdbapi.com/?s=action&page=${page}&apikey=4640ef30`
 			);
 			const newMovies = await res.json();
+			// 获取分页数据时，新增到数组
 			store.movies.unshift(...newMovies.Search.map(m => ({ ...m, score: 0 })));
 			page++;
 		}),
+		// movie: view 层调用func 传入的 引用对象
 		addToQueue: action(movie => {
 			movie.inQueue = true;
 		}),
